@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-YOUR HEADER COMMENT HERE
+This is my gene finder program, which can take a genome and process where certain genes are.
 
-@author: YOUR NAME HERE
+@author: Kevin Zhang
 
 """
 
@@ -38,20 +38,20 @@ def get_complement(nucleotide):
     >>> get_complement(15)
     'This is not a DNA base, good sir'
     >>> get_complement('Z')
-    'This is not a DNA base'
+    'ValueError: This is not a DNA nucleotide, you're a chicken.'
 
     """
     
     if not type(nucleotide) is str:
     	return "This is not a DNA base, good sir"
+	
+    base_list = {'C':'G','G':'C','A':'T','T':'A'}
 
-    normal_list = ['G','C','T','A']	
-    complementary_list = ['C','G','A','T']	
+    if nucleotide in base_list:
+    	return base_list[nucleotide]
 
-    for i in range(0,4):
-    	if nucleotide == normal_list[i]:
-    		return complementary_list[i]
-    return "This is not a DNA base"		
+    else:
+    	raise ValueError("This is not a DNA nucleotide, you're a chicken.")	
 
 
 def get_reverse_complement(dna):
@@ -68,7 +68,7 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     >>> get_reverse_complement("CCZZTHSGWNSS")
-    'This DNA string is not real'
+    'ValueError: This is not a DNA nucleotide, you're a chicken.'
     >>> get_reverse_complement("TTTTTTTTTTTT")
     'AAAAAAAAAAAA'
     >>> get_reverse_complement("CCGTACATG")
@@ -81,11 +81,8 @@ def get_reverse_complement(dna):
     reverse_DNA = dna[::-1]
 
     for base in reverse_DNA:
-    	complement = get_complement(base)
-    	if len(complement) == 1:
-    		complementary_reverse_DNA = complementary_reverse_DNA + complement
-    	else:
-    		return "This DNA string is not real"	
+    	complementary_reverse_DNA = complementary_reverse_DNA + get_complement(base)
+
 
     return complementary_reverse_DNA	
 
@@ -200,7 +197,7 @@ def find_all_ORFs(dna):
     ['ATG', 'ATGACTGAT', 'ATGAATGTGAGCGATGAC']
     """
     
-    return [i for index in range(0,3) for i in find_all_ORFs_oneframe(dna[index:])]
+    return reduce(list.__add__, [find_all_ORFs_oneframe(dna[index:]) for index in range(3)])
 
 
 
@@ -220,7 +217,7 @@ def find_all_ORFs_both_strands(dna):
     """
 
 
-    return [i for i in find_all_ORFs(dna)] + [i for i in find_all_ORFs(get_reverse_complement(dna))]
+    return find_all_ORFs(dna) + find_all_ORFs(get_reverse_complement(dna))
 
 
 
