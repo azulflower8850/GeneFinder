@@ -118,8 +118,8 @@ def rest_of_ORF(dna):
     if not type(dna) is str:
     		return "Something wrong with this DNA strand"
 
-    for index in range(0,len(dna)-len(dna)%3,3):
-    	codon = dna[index] + dna[index + 1] + dna[index + 2]
+    for index in range(0,len(dna),3):
+    	codon = dna[index:index+3]
     	for stopcodon in codons[10]:
     		if(codon == stopcodon):
     			ORF = ORF[0:index]
@@ -163,8 +163,7 @@ def find_all_ORFs_oneframe(dna):
     index = 0
 
     while index < len(dna):
-    	if(index < len(dna)-3):
-    		codon = dna[index] + dna[index + 1] + dna[index + 2]
+    	codon = dna[index:index+3]
     	if(codon == "ATG"):
     		ORF = rest_of_ORF(dna[index:])
     		ORF_list.append(ORF)
