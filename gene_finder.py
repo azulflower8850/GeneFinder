@@ -25,13 +25,33 @@ def get_complement(nucleotide):
 
         nucleotide: a nucleotide (A, C, G, or T) represented as a string
         returns: the complementary nucleotide
+
+        Also adding all the bases just for complete testing. Will also add extreme cases such as non-strings and non-DNA to test for robustness
     >>> get_complement('A')
     'T'
     >>> get_complement('C')
     'G'
+    >>> get_complement('T')
+    'A'
+    >>> get_complement('A')
+    'T'
+    >>> get_complement(15)
+    'This is not a DNA base, good sir'
+    >>> get_complement('Z')
+    'This is not a DNA base'
+
     """
-    # TODO: implement this
-    pass
+    
+    if not type(nucleotide) is str:
+    	return "This is not a DNA base, good sir"
+
+    normal_list = ['G','C','T','A']	
+    complementary_list = ['C','G','A','T']	
+
+    for i in range(0,4):
+    	if nucleotide == normal_list[i]:
+    		return complementary_list[i]
+    return "This is not a DNA base"		
 
 
 def get_reverse_complement(dna):
@@ -40,13 +60,34 @@ def get_reverse_complement(dna):
 
         dna: a DNA sequence represented as a string
         returns: the reverse complementary DNA sequence represented as a string
+
+        Adding additional cases to prove robustness, as well as additional testing for completeness
+
     >>> get_reverse_complement("ATGCCCGCTTT")
     'AAAGCGGGCAT'
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
+    >>> get_reverse_complement("CCZZTHSGWNSS")
+    'This DNA string is not real'
+    >>> get_reverse_complement("TTTTTTTTTTTT")
+    'AAAAAAAAAAAA'
+    >>> get_reverse_complement("CCGTACATG")
+    'CATGTACGG'
     """
-    # TODO: implement this
-    pass
+    
+
+    
+    complementary_reverse_DNA = ""
+    reverse_DNA = dna[::-1]
+
+    for base in reverse_DNA:
+    	complement = get_complement(base)
+    	if len(complement) == 1:
+    		complementary_reverse_DNA = complementary_reverse_DNA + complement
+    	else:
+    		return "This DNA string is not real"	
+
+    return complementary_reverse_DNA	
 
 
 def rest_of_ORF(dna):
@@ -57,13 +98,37 @@ def rest_of_ORF(dna):
 
         dna: a DNA sequence
         returns: the open reading frame represented as a string
+
+        also testing to see if entire string is returned when there is no stop codon
+        will also test for outlier cases
+
     >>> rest_of_ORF("ATGTGAA")
     'ATG'
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
+    >>> rest_of_ORF("ATGAGAGA")
+    'ATGAGAGA'
+    >>> rest_of_ORF(15)
+    'Something wrong with this DNA strand'
     """
-    # TODO: implement this
-    pass
+    
+    ORF = dna
+    codon = ""
+
+    if not type(dna) is str:
+    		return "Something wrong with this DNA strand"
+
+    for index in range(0,len(dna)-len(dna)%3,3):
+    	codon = dna[index] + dna[index + 1] + dna[index + 2]
+    	for stopcodon in codons[10]:
+    		if(codon == stopcodon):
+    			ORF = ORF[0:index]
+    			
+    return ORF		
+
+
+
+
 
 
 def find_all_ORFs_oneframe(dna):
@@ -76,11 +141,41 @@ def find_all_ORFs_oneframe(dna):
 
         dna: a DNA sequence
         returns: a list of non-nested ORFs
+
+        will also test for robustness of ATG recognization and ORF identification
+
+        also will test when ATG is not at the beginning and also when there are junk codons in the middle to see it can recongize exactly where codons are
+
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
+    >>> find_all_ORFs_oneframe("ATGTAGATGTAGATGTAGATGTAG")
+    ['ATG', 'ATG', 'ATG', 'ATG']
+    >>> find_all_ORFs_oneframe("CCGCGCATGAGATGATAGCCGGGGATGAGATAG")
+    ['ATGAGA', 'ATGAGA']
+
+
     """
-    # TODO: implement this
-    pass
+    
+
+    ORF_list = []
+
+    codon = ""
+    index = 0
+
+    while index < len(dna):
+    	if(index < len(dna)-3):
+    		codon = dna[index] + dna[index + 1] + dna[index + 2]
+    	if(codon == "ATG"):
+    		ORF = rest_of_ORF(dna[index:])
+    		ORF_list.append(ORF)
+    		index = index + len(ORF)
+    	index = index +3	
+
+    return ORF_list		
+
+    	
+
+
 
 
 def find_all_ORFs(dna):
@@ -93,11 +188,21 @@ def find_all_ORFs(dna):
         dna: a DNA sequence
         returns: a list of non-nested ORFs
 
+
+        testing for outlier cases where there are no good codons
+
+        also will test for completeness by using a lot of start and stop codons
+
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
+    >>> find_all_ORFs("AAAAAAAAAAAAAAAAAAA")
+    []
+    >>> find_all_ORFs("CCATGAATGTGAGCGATGACTGATTAG")
+    ['ATG', 'ATGACTGAT', 'ATGAATGTGAGCGATGAC']
     """
-    # TODO: implement this
-    pass
+    
+    return [i for index in range(0,3) for i in find_all_ORFs_oneframe(dna[index:])]
+
 
 
 def find_all_ORFs_both_strands(dna):
@@ -106,11 +211,18 @@ def find_all_ORFs_both_strands(dna):
 
         dna: a DNA sequence
         returns: a list of non-nested ORFs
+
+        I don't think that this method needs further testing because the only difference is that I'm doing find_all_ORFs() except on the opposite side of DNA.
+        This method's functionality has already been tested thoroughly in the helper methods it uses, there is no need to rigorously test the accumulation of a group of helper methods
+        which have all been well tested and guaranteed functionality
+
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
-    pass
+
+
+    return [i for i in find_all_ORFs(dna)] + [i for i in find_all_ORFs(get_reverse_complement(dna))]
+
 
 
 def longest_ORF(dna):
@@ -163,4 +275,4 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(),verbose=True)
