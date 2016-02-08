@@ -317,7 +317,7 @@ def gene_finder(dna):
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
     
-    threshold = longest_ORF_noncoding(dna, 1500)
+    threshold = longest_ORF_noncoding(dna, 10)
     ORF_list = find_all_ORFs_both_strands(dna)
 
     aa_seq = []
@@ -332,6 +332,9 @@ if __name__ == "__main__":
     import doctest
     #doctest.run_docstring_examples(coding_strand_to_AA, globals(),verbose=True)
     #print longest_ORF_noncoding("ATGGGGTGA",2)
-    from load import load_seq
-    dna = load_seq("./data/X73525.fa")
-    print gene_finder(dna)
+    #from load import load_seq
+    #dna = load_seq("./data/X73525.fa")
+    #print gene_finder(dna)
+    from load import load_contigs
+    contigs = load_contigs()
+    print gene_finder(contigs[7][1])
