@@ -1,2 +1,2 @@
 # GeneFinder
-This is the base repository for the gene-finder mini project.
+For this project I created a gene finder that could take a strand of DNA and find any amino acids sequences that exist within the strand. The code is created based on an elaborate hierarchy of functions, making it robust and able to handle any strand of DNA provided it is real. Feel free to check the strands against BLAST or any other more professional DNA gene finding program, they're quite accurate.
